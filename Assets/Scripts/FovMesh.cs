@@ -6,7 +6,9 @@ public class FovMesh : MonoBehaviour
     private Fov _fov;
     private Mesh _mesh;
     private float _meshRes = 2;
-
+    [Range(0, 10)]
+    public float quality;
+    public float cutoff;
     void Start()
     {
         _mesh = GetComponent<MeshFilter>().mesh;
@@ -20,7 +22,7 @@ public class FovMesh : MonoBehaviour
 
     private void MakeMesh()
     {
-        var stepCount = Mathf.RoundToInt(_fov.viewAngle * _meshRes);
+        var stepCount = Mathf.RoundToInt(_fov.viewAngle * _meshRes * quality);
         var stepAngle = _fov.viewAngle / stepCount;
         var viewVertex = new List<Vector3>();
         for (int i = 0; i <= stepCount; i++)
@@ -31,7 +33,7 @@ public class FovMesh : MonoBehaviour
 
             if (hit.collider == null)
             {
-                viewVertex.Add(transform.position + dir.normalized * _fov.viewRadius);
+                viewVertex.Add(transform.position + dir.normalized * (_fov.viewRadius));
             }
             else
             {
@@ -45,12 +47,13 @@ public class FovMesh : MonoBehaviour
         var triangles = new int[(vertexCount - 2) * 3];
         for (int i = 0; i < vertexCount - 1; i++)
         {
-            verticals[i + 1] = transform.InverseTransformPoint(viewVertex[i]);
+            verticals[i + 1] = transform.InverseTransformPoint(viewVertex[i]) + Vector3.forward * cutoff;
             if (i < vertexCount - 2)
             {
-                triangles[i * 3 + 2] = 0;
-                triangles[i * 3 + 1] = i + 1;
-                triangles[i * 3] = i + 2;   
+                var calculate = i * 3;
+                triangles[calculate + 2] = 0;
+                triangles[calculate + 1] = i + 1;
+                triangles[calculate] = i + 2;   
             }
         }
         _mesh.Clear();
