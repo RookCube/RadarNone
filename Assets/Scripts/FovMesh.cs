@@ -8,7 +8,6 @@ public class FovMesh : MonoBehaviour
     private float _meshRes = 2;
     [Range(0, 10)]
     public float quality;
-    public float cutoff;
     void Start()
     {
         _mesh = GetComponent<MeshFilter>().mesh;
@@ -47,7 +46,7 @@ public class FovMesh : MonoBehaviour
         var triangles = new int[(vertexCount - 2) * 3];
         for (int i = 0; i < vertexCount - 1; i++)
         {
-            verticals[i + 1] = transform.InverseTransformPoint(viewVertex[i]) + Vector3.forward * cutoff;
+            verticals[i + 1] = transform.InverseTransformPoint(viewVertex[i]);
             if (i < vertexCount - 2)
             {
                 var calculate = i * 3;
